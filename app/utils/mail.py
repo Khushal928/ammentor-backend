@@ -1,8 +1,6 @@
 import smtplib
 from email.message import EmailMessage
 import os
-
-
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -12,7 +10,7 @@ EMAIL_PASSWORD = os.getenv("SMTP_PASSWORD")
 def send_email(to_email: str, otp: str):
     msg = EmailMessage()
     msg["Subject"] = "Your OTP Verification Code"
-    msg["From"] = EMAIL_ADDRESS
+    msg["From"] = "support@amfoss.in" 
     msg["To"] = to_email
     msg.set_content(f"Your OTP is: {otp}\n\nThis OTP is valid for 5 minutes.")
 
