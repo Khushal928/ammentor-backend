@@ -20,7 +20,7 @@ app.include_router(tracks.router, prefix="/tracks", tags=["Tracks"])
 app.include_router(leaderboard.router, prefix="/leaderboard", tags=["Leaderboard"])
 app.include_router(mentors.router, prefix="/mentors", tags=["Mentors"])
 app.include_router(submissions.router, prefix="/submissions", tags=["Submissions"])
-app.include_router(delete.router, prefix="/delete", tags=["Delete"])
+# app.include_router(delete.router, prefix="/delete", tags=["Delete"])
 
 @app.get("/")
 def root():
