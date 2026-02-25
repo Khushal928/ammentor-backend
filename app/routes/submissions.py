@@ -19,7 +19,7 @@ def get_submissions(
     user = db.query(models.User).filter(models.User.email == email).first()
 
     if not user:
-        raise HTTPException(status_code=404, detail="User found")
+        raise HTTPException(status_code=404, detail="User not found")
     
     submissions = get_submissions_for_user(db, email, track_id)
 
