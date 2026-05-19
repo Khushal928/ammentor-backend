@@ -17,7 +17,7 @@ class User(Base):
 class Group(Base):
     __tablename__ = "groups"
     id = Column(Integer, primary_key=True, index=True)
-    title = Column(String, unique=True, nullable=False)
+    title = Column(String, nullable=False)
     description = Column(Text)
 
 class Task(Base):
@@ -39,7 +39,6 @@ class Task(Base):
                             name="check_individual_task_has_user"
                         ),
                     ) 
- 
 
     group = relationship("Group", back_populates="tasks")
     user = relationship("User", back_populates="tasks")

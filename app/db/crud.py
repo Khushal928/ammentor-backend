@@ -5,9 +5,6 @@ from app.db import models
 from datetime import datetime, date
 from sqlalchemy import func
 
-def get_user_by_email(db: Session, email: str):
-    return db.query(models.User).filter(models.User.email == email).first()
-
 def get_task(db: Session, track_id: int, task_no: int):
     return db.query(models.Task).filter_by(track_id=track_id, task_no=task_no).first()
 
