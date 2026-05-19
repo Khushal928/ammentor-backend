@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 import random, string
 from app.db import models, crud
 from app.db.db import get_db
-from app.schemas.user import UserOut
+from app.schemas.auth import UserOut
 from app.utils.mail import send_email
 
 from app.crud.auth import create_access_token, get_user_by_email

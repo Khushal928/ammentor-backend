@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from app.db import models
-from fastapi import Depends, HTTPException, status
+from sqlalchemy.orm import Session
 from fastapi.security import OAuth2PasswordBearer
 import jwt
 import os
@@ -30,3 +30,6 @@ def decode_token(token: str) -> dict:
         return {"error": "token expired"}
     except jwt.PyJWTError:
         return {"error": "invalid token"}
+    
+def get_user_by_email(db: Session, email: str):
+    return db.query(models.User).filter(models.User.email == email).first()
