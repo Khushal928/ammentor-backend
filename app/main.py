@@ -1,9 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.routes import auth, group, progress, leaderboard, mentors, submissions, delete
+from app.routes import auth, claim, group, user
 
-app = FastAPI(title="amMentor API")
+app = FastAPI(title="design your destiny API")
 
 app.add_middleware(
     CORSMiddleware,
@@ -15,13 +15,10 @@ app.add_middleware(
 
 
 app.include_router(auth.router, prefix="/auth", tags=["Auth"])
-app.include_router(progress.router, prefix="/progress", tags=["Progress"])
-app.include_router(group.router, prefix="/tracks", tags=["Tracks"])
-app.include_router(leaderboard.router, prefix="/leaderboard", tags=["Leaderboard"])
-app.include_router(mentors.router, prefix="/mentors", tags=["Mentors"])
-app.include_router(submissions.router, prefix="/submissions", tags=["Submissions"])
-# app.include_router(delete.router, prefix="/delete", tags=["Delete"])
+app.include_router(user.router, prefix="/user", tags=["User"])
+app.include_router(claim.router, prefix="/claim", tags=["Claims"])
+app.include_router(group.router, prefix="/group", tags=["Groups"])
 
 @app.get("/")
 def root():
-    return {"message": "Welcome to amMentor 🚀"}
+    return {"message": "Welcome to design your destiny backend"}

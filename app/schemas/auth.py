@@ -1,6 +1,7 @@
 from pydantic import BaseModel, EmailStr, ConfigDict
 
-class User(BaseModel):
+
+class UserOut(BaseModel):
     id: int
     email: EmailStr
     name: str
@@ -8,7 +9,32 @@ class User(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
-class UserOut(BaseModel):
+
+class UserSignup(BaseModel):
+    email: EmailStr
+    name: str
+
+
+class OTPRequest(BaseModel):
+    email: EmailStr
+
+
+class OTPVerify(BaseModel):
+    email: EmailStr
+    otp: str
+
+
+class MessageResponse(BaseModel):
+    message: str
+
+
+class TokenResponse(BaseModel):
     access_token: str
-    token_type: str = "bearer"
-    user: User
+    token_type: str
+    user: UserOut
+
+    model_config = ConfigDict(from_attributes=True)
+
+class MentorCreate(BaseModel):
+    email: EmailStr
+    name: str
