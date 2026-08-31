@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.routes import auth, claim, group, user
 
-app = FastAPI(title="design your destiny API")
+app = FastAPI(title="DUD API")
 
 app.add_middleware(
     CORSMiddleware,
@@ -21,4 +21,4 @@ app.include_router(group.router, prefix="/group", tags=["Groups"])
 
 @app.get("/")
 def root():
-    return {"message": "Welcome to design your destiny backend"}
+    return {"message": "Welcome to DUD backend"}
