@@ -25,22 +25,24 @@ class ParticipationCategory(str, enum.Enum):
     REPRESENTATIVE = "representative"
 
 class ClaimStatus(str, enum.Enum):
-    DRAFT = "draft"
+
     PENDING_REVIEW = "pending_review"
     NEEDS_INFO = "needs_info"
     APPROVED_PUBLISHED = "approved_published"
     REJECTED = "rejected"
     DISPUTED = "disputed"
     CLOSED = "closed"
+    WITHDRAWN = "withdrawn"
 
 VALID_TRANSITIONS: dict[ClaimStatus, set[ClaimStatus]] = {
-    ClaimStatus.DRAFT:               {ClaimStatus.PENDING_REVIEW},
-    ClaimStatus.PENDING_REVIEW:      {ClaimStatus.NEEDS_INFO, ClaimStatus.APPROVED_PUBLISHED, ClaimStatus.REJECTED},
-    ClaimStatus.NEEDS_INFO:          {ClaimStatus.PENDING_REVIEW},
+
+    ClaimStatus.PENDING_REVIEW:      {ClaimStatus.NEEDS_INFO, ClaimStatus.APPROVED_PUBLISHED, ClaimStatus.REJECTED,ClaimStatus.WITHDRAWN},
+    ClaimStatus.NEEDS_INFO:          {ClaimStatus.PENDING_REVIEW,ClaimStatus.WITHDRAWN,},
     ClaimStatus.REJECTED:            {ClaimStatus.DISPUTED, ClaimStatus.CLOSED},
     ClaimStatus.DISPUTED:            {ClaimStatus.APPROVED_PUBLISHED, ClaimStatus.REJECTED},
     ClaimStatus.APPROVED_PUBLISHED:  set(),
     ClaimStatus.CLOSED:              set(),
+    ClaimStatus.WITHDRAWN:           set(),
 }
 
 class User(Base):
@@ -71,7 +73,7 @@ class Claim(Base):
     # evidence= TODO
     team=Column(Boolean, nullable=False, default=False)
     supporting_link = Column(String, nullable=True) 
-    status = Column(Enum(ClaimStatus), nullable=False, default=ClaimStatus.DRAFT)
+    status = Column(Enum(ClaimStatus), nullable=False, default=ClaimStatus.PENDING_REVIEW)
     mentor_feedback = Column(Text, nullable=True)
     submitted_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now())
     approved_at = Column(DateTime(timezone=True), nullable=True)
@@ -109,3 +111,11 @@ class OTP(Base):
     email = Column(String, primary_key=True, index=True)
     otp = Column(String, nullable=False)
     expires_at = Column(DateTime, nullable=False)
+
+
+class ClaimRubric(Base):
+    __tablename__ = "claim_rubrics"
+    id = Column(Integer, primary_key=True)
+    event_level = Column(Enum(EventLevel),nullable=False)
+    participation_category = Column(Enum(ParticipationCategory),nullable=False)
+    points = Column(Integer, nullable=False)

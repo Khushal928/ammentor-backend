@@ -26,4 +26,3 @@ def get_my_claims(
     db: Session = Depends(get_db),
 ):
     return get_all_user_claims(db, user_id=current_user.id)
-

@@ -63,3 +63,10 @@ class ClaimDetailOut(BaseModel):
 
     class Config:
         from_attributes = True
+
+class ClaimRejectRequest(BaseModel):
+    reason: str 
+
+
+class ClaimInfoRequest(BaseModel):
+    message: str

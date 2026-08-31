@@ -1,11 +1,33 @@
-from fastapi import APIRouter, Depends, HTTPException
+from schemas.claim import ClaimDetailOut,ClaimInfoRequest,ClaimRejectRequest
+from crud.claim import transition_claim,create_claim
+from fastapi import APIRouter, Depends, Query, HTTPException
 from sqlalchemy.orm import Session
-from app.db.db import get_db
-from app.db import models
-from app.crud.auth import get_current_user
-from app.schemas.claim import ClaimDetailOut
+from db.db import get_db
+from db import models
+from crud.auth import get_current_user
 
 router = APIRouter()
+
+@router.post("/create_claim", response_model=ClaimDetailOut)
+def create_claim(
+    claim: models.ClaimCreate,
+    db: Session = Depends(get_db),
+):
+    return create_claim(
+        db=db,
+        submitter_id=claim.submitter_id,
+        group_id=claim.group_id,
+        event_name=claim.event_name,
+        event_level=claim.event_level,
+        participation_category=claim.participation_category,
+        event_start_date=claim.event_start_date,
+        event_end_date=claim.event_end_date,
+        organising_body=claim.organising_body,
+        team=claim.team,
+        status=claim.status,
+        submitted_at=claim.submitted_at,
+    )
+
 
 @router.get("/{claim_id}", response_model=ClaimDetailOut)
 def get_claim_details(
@@ -22,6 +44,8 @@ def get_claim_details(
 
     if not is_owner and not is_reviewer:
         raise HTTPException(status_code=403, detail="Not authorized to view this claim.")
+
+    #TODO remove the db query here
 
     team_members = (
         db.query(models.ClaimTeamMember)
@@ -89,4 +113,137 @@ def get_claim_details(
     }
 
 
+
+
+# all possible transisiions of a claim could be defined here
+
+@router.post(
+    "/claim/{claim_id}/approve",
+    response_model=ClaimDetailOut,
+)
+def approve_claim(claim_id: int,db: Session = Depends(get_db),current_user: models.User = Depends(get_current_user)):
+    if current_user.role != models.UserRole.MENTOR:
+        raise HTTPException(
+            status_code=403,
+            detail="Only mentors can approve claims",
+        )
+
+    claim = db.get(models.Claim, claim_id)
+
+    if not claim:
+        raise HTTPException(
+            status_code=404,
+            detail="Claim not found",
+        )
+
+    return transition_claim(
+        db,
+        claim,
+        models.ClaimStatus.APPROVED_PUBLISHED,
+    )
+
+@router.post("/claim/{claim_id}/reject",response_model=ClaimDetailOut,)
+def reject_claim(
+    claim_id: int,
+    request: ClaimRejectRequest,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
+    if current_user.role != models.UserRole.MENTOR:
+        raise HTTPException(
+            status_code=403,
+            detail="Only mentors can reject claims",
+        )
+
+    claim = db.get(models.Claim, claim_id)
+
+    if not claim:
+        raise HTTPException(
+            status_code=404,
+            detail="Claim not found",
+        )
+
+    return transition_claim(
+        db,
+        claim,
+        models.ClaimStatus.REJECTED,
+        request.reason,
+    )
+
+@router.post( "/claim/{claim_id}/needs-info",response_model=ClaimDetailOut)
+def needs_info(
+    claim_id: int,
+    request: ClaimInfoRequest,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
+    if current_user.role != models.UserRole.MENTOR:
+        raise HTTPException(
+            status_code=403,
+            detail="Only mentors can request information",
+        )
+
+    claim = db.get(models.Claim, claim_id)
+
+    if not claim:
+        raise HTTPException(
+            status_code=404,
+            detail="Claim not found",
+        )
+
+    claim.info_request = request.message
+
+    return transition_claim(
+        db,
+        claim,
+        models.ClaimStatus.NEEDS_INFO,
+    )
+
+@router.post(
+    "/claim/{claim_id}/withdraw",
+    response_model=ClaimDetailOut,
+)
+def withdraw_claim(claim_id: int,db: Session = Depends(get_db),current_user: models.User = Depends(get_current_user)):
+    claim = db.get(models.Claim, claim_id)
+
+    if not claim:
+        raise HTTPException(
+            status_code=404,
+            detail="Claim not found",
+        )
+
+    if claim.submitter_id != current_user.id:
+        raise HTTPException(
+            status_code=403,
+            detail="You can only withdraw your own claims",
+        )
+
+    return transition_claim(
+        db,
+        claim,
+        models.ClaimStatus.WITHDRAWN,
+    )
+
+@router.post("/claims/{claim_id}/transition",response_model=ClaimDetailOut)
+def transition_claim_endpoint(
+    claim_id: int,
+    new_status: models.ClaimStatus,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
+    if current_user.role != models.UserRole.MENTOR:
+        raise HTTPException(
+            status_code=403,
+            detail="Only mentors can change claim status",
+        )
+
+    claim = db.get(models.Claim, claim_id)
+
+    if claim is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Claim not found",
+        )
+
+    return transition_claim(db, claim, new_status)
 
