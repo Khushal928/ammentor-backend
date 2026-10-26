@@ -5,6 +5,10 @@ from app.db.models import ClaimStatus
 
 
 
+# Explicit display ordering: lower number = shown first
+_STATUS_ORDER = {s: i for i, s in enumerate(ClaimStatus)}
+
+
 def get_all_user_claims(db: Session, user_id: int):
     claims = (
         db.query(models.Claim)
@@ -12,7 +16,7 @@ def get_all_user_claims(db: Session, user_id: int):
         .all()
     )
 
-    claims.sort(key=lambda c: ClaimStatus.index(c.status))
+    claims.sort(key=lambda c: _STATUS_ORDER.get(c.status, 999))
 
     now = datetime.now(timezone.utc)
     for c in claims:
