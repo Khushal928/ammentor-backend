@@ -8,7 +8,7 @@ def get_mentor_claim_queue(db: Session, group_id: int):
     claims = (
         db.query(models.Claim)
         .filter(models.Claim.group_id == group_id)
-        .filter(models.Claim.status == models.ClaimStatus.PENDING)
+        .filter(models.Claim.status == models.ClaimStatus.PENDING_REVIEW)
         .order_by(models.Claim.submitted_at.asc())
         .all()
     )
