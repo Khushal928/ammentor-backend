@@ -41,7 +41,7 @@ def get_claim_details(
         raise HTTPException(status_code=404, detail="Claim not found.")
 
     is_owner = claim.submitter_id == current_user.id
-    is_reviewer = current_user.role in (models.UserRole.MENTOR, models.UserRole.ADMIN)
+    is_reviewer = current_user.role in (models.UserRole.MENTOR, models.UserRole.PROGRAM_ADMIN, models.UserRole.SUPER_ADMIN)
 
     if not is_owner and not is_reviewer:
         raise HTTPException(status_code=403, detail="Not authorized to view this claim.")
@@ -77,14 +77,15 @@ def get_claim_details(
         "submitted_at": claim.submitted_at,
         "approved_at": claim.approved_at,
         "submitter": {
-            "user_id": claim.submitter.id,
-            "username": claim.submitter.username,
+            "id": claim.submitter.id,
+            "name": claim.submitter.name,
             "email": claim.submitter.email,
         },
         "evaluated_by_mentor": (
             {
-                "user_id": claim.evaluated_by_mentor.id,
-                "username": claim.evaluated_by_mentor.username,
+                "id": claim.evaluated_by_mentor.id,
+                "name": claim.evaluated_by_mentor.name,
+                "email": claim.evaluated_by_mentor.email,
             }
             if claim.evaluated_by_mentor
             else None
