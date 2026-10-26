@@ -16,7 +16,7 @@ def get_mentor_claim_queue(db: Session, group_id: int):
     return [
         {
             "claim_id": c.id,
-            "username": c.submitter.username,
+            "username": c.submitter.name,
             "user_id": c.submitter_id,
             "event_name": c.event_name,
             "days_ago": (now - c.submitted_at).days,
@@ -36,7 +36,7 @@ def get_admin_claim_queue(db: Session, group_id: int):
     return [
         {
             "claim_id": c.id,
-            "username": c.submitter.username,
+            "username": c.submitter.name,
             "user_id": c.submitter_id,
             "event_name": c.event_name,
             "days_ago": (now - c.submitted_at).days,
@@ -56,7 +56,7 @@ def get_mentee_claims(db: Session, user_id: int, group_id: int):
     return [
         {
             "claim_id": c.id,
-            "username": c.submitter.username,
+            "username": c.submitter.name,
             "user_id": c.submitter_id,
             "event_name": c.event_name,
             "days_ago": (now - c.submitted_at).days,
