@@ -100,7 +100,7 @@ def create_mentor(
     current_user: models.User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    if current_user.role != models.UserRole.ADMIN:
+    if current_user.role not in (models.UserRole.PROGRAM_ADMIN, models.UserRole.SUPER_ADMIN):
         raise HTTPException(status_code=403, detail="Only admins can create mentors.")
 
     existing = get_user_by_email(db, payload.email)

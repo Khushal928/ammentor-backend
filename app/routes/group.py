@@ -15,7 +15,7 @@ def create_new_group(
     current_user: models.User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    if current_user.role != UserRole.ADMIN:
+    if current_user.role not in (UserRole.PROGRAM_ADMIN, UserRole.SUPER_ADMIN):
         raise HTTPException(status_code=403, detail="Only admins can create groups.")
 
     group = models.Group(title=group_data.title, description=group_data.description)
@@ -31,7 +31,7 @@ def update_group(
     current_user: models.User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    if current_user.role != UserRole.ADMIN:
+    if current_user.role not in (UserRole.PROGRAM_ADMIN, UserRole.SUPER_ADMIN):
         raise HTTPException(status_code=403, detail="Only admins can update groups.")
 
     group = db.query(models.Group).filter(models.Group.id == group_id).first()
@@ -59,7 +59,7 @@ def get_group_claims(
 
     if current_user.role == UserRole.MENTOR:
         return get_mentor_claim_queue(db, group_id=group_id)
-    if current_user.role == UserRole.ADMIN:
+    if current_user.role in (UserRole.PROGRAM_ADMIN, UserRole.SUPER_ADMIN):
         return get_admin_claim_queue(db, group_id=group_id)
     else:
         return get_mentee_claims(db, user_id=current_user.id, group_id=group_id)
