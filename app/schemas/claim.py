@@ -39,6 +39,17 @@ class ClaimHistoryOut(BaseModel):
         from_attributes = True
 
 
+class EvidenceOut(BaseModel):
+    id: int
+    file_name: str
+    file_url: str
+    file_type: Optional[str] = None
+    uploaded_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
 class ClaimDetailOut(BaseModel):
     claim_id: int
     event_name: str
@@ -52,14 +63,17 @@ class ClaimDetailOut(BaseModel):
     supporting_link: Optional[str] = None
     status: ClaimStatus
     mentor_feedback: Optional[str] = None
+    rejection_reason: Optional[str] = None
+    info_request: Optional[str] = None
+    points: Optional[int] = None
     submitted_at: datetime
     approved_at: Optional[datetime] = None
     group: GroupBrief
     submitter: UserBrief
     evaluated_by_mentor: Optional[UserBrief] = None
     team_members: List[TeamMemberOut] = []
+    evidence_files: List[EvidenceOut] = []
     history: List[ClaimHistoryOut] = []
-    # evidence: List[EvidenceOut] = []  # once evidence/attachments model exists
 
     class Config:
         from_attributes = True
@@ -72,6 +86,28 @@ class ClaimInfoRequest(BaseModel):
     message: str
 
 
+class ClaimDisputeRequest(BaseModel):
+    reason: str
+
+
+class ClaimResolveDisputeRequest(BaseModel):
+    decision: str  # "approve" or "reject"
+    comment: Optional[str] = None
+
+
+class ClaimUpdate(BaseModel):
+    event_name: Optional[str] = None
+    event_level: Optional[EventLevel] = None
+    participation_category: Optional[ParticipationCategory] = None
+    event_start_date: Optional[date] = None
+    event_end_date: Optional[date] = None
+    organising_body: Optional[str] = None
+    description: Optional[str] = None
+    team: Optional[bool] = None
+    supporting_link: Optional[str] = None
+    group_id: Optional[int] = None
+
+
 class ClaimCreate(BaseModel):
     submitter_id: int | None = None
     group_id: int
@@ -81,6 +117,8 @@ class ClaimCreate(BaseModel):
     event_start_date: date
     event_end_date: date
     organising_body: str
+    description: Optional[str] = None
+    supporting_link: Optional[str] = None
     team: bool = False
     status: ClaimStatus = ClaimStatus.PENDING_REVIEW
     submitted_at: datetime | None = None

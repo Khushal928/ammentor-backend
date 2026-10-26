@@ -24,3 +24,4 @@ pydantic[email]
 alembic
 PyJWT==2.10.1
 slowapi==0.1.9
+python-multipart==0.0.32

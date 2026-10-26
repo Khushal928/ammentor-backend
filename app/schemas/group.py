@@ -8,7 +8,7 @@ class GroupCreate(BaseModel):
 class GroupOut(BaseModel):
     id: int
     title: str
-    description: Optional[str]
+    description: Optional[str] = None
 
     class Config:
         from_attributes = True
@@ -23,3 +23,14 @@ class ClaimQueueItem(BaseModel):
 class GroupUpdate(BaseModel):
     title: str | None = None
     description: str | None = None
+
+class MentorBrief(BaseModel):
+    id: int
+    name: str
+    email: str
+
+    class Config:
+        from_attributes = True
+
+class MentorAssignRequest(BaseModel):
+    mentor_id: int

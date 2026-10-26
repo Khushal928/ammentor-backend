@@ -24,7 +24,7 @@ OTP_EXPIRY_MINUTES = 5
 
 
 def generate_and_send_otp(db: Session, email: str) -> None:
-    otp_code = ''.join(random.choices(string.digits, k=OTP_LENGTH))
+    otp_code = ''.join(secrets.choice(string.digits) for _ in range(OTP_LENGTH))
     expiry = datetime.now(timezone.utc) + timedelta(minutes=OTP_EXPIRY_MINUTES)
 
     create_or_update_otp(db, email, hash_otp(otp_code), expiry)
@@ -47,6 +47,8 @@ def signup_student(payload: UserSignup, db: Session = Depends(get_db)):
         email=payload.email,
         name=payload.name,
         role=models.UserRole.STUDENT,
+        roll_number=payload.roll_number,
+        department=payload.department,
     )
     db.add(user)
     db.commit()
@@ -111,6 +113,7 @@ def create_mentor(
         email=payload.email,
         name=payload.name,
         role=models.UserRole.MENTOR,
+        department=payload.department,
     )
     db.add(user)
     db.commit()

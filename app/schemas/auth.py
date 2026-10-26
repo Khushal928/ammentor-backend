@@ -1,4 +1,5 @@
 from pydantic import BaseModel, EmailStr, ConfigDict
+from typing import Optional
 
 
 class UserOut(BaseModel):
@@ -6,6 +7,8 @@ class UserOut(BaseModel):
     email: EmailStr
     name: str
     role: str
+    roll_number: Optional[str] = None
+    department: Optional[str] = None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -13,6 +16,8 @@ class UserOut(BaseModel):
 class UserSignup(BaseModel):
     email: EmailStr
     name: str
+    roll_number: Optional[str] = None
+    department: Optional[str] = None
 
 
 class OTPRequest(BaseModel):
@@ -35,6 +40,8 @@ class TokenResponse(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
+
 class MentorCreate(BaseModel):
     email: EmailStr
     name: str
+    department: Optional[str] = None
