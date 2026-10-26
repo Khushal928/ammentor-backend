@@ -70,3 +70,17 @@ class ClaimRejectRequest(BaseModel):
 
 class ClaimInfoRequest(BaseModel):
     message: str
+
+
+class ClaimCreate(BaseModel):
+    submitter_id: int | None = None
+    group_id: int
+    event_name: str
+    event_level: EventLevel
+    participation_category: ParticipationCategory
+    event_start_date: date
+    event_end_date: date
+    organising_body: str
+    team: bool = False
+    status: ClaimStatus = ClaimStatus.PENDING_REVIEW
+    submitted_at: datetime | None = None
