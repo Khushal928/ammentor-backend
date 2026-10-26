@@ -1,21 +1,22 @@
-from schemas.claim import ClaimDetailOut,ClaimInfoRequest,ClaimRejectRequest
-from crud.claim import transition_claim,create_claim
+from app.schemas.claim import ClaimCreate, ClaimDetailOut, ClaimInfoRequest, ClaimRejectRequest
+from app.crud.claim import transition_claim, create_claim as crud_create_claim
 from fastapi import APIRouter, Depends, Query, HTTPException
 from sqlalchemy.orm import Session
-from db.db import get_db
-from db import models
-from crud.auth import get_current_user
+from app.db.db import get_db
+from app.db import models
+from app.crud.auth import get_current_user
 
 router = APIRouter()
 
 @router.post("/create_claim", response_model=ClaimDetailOut)
-def create_claim(
-    claim: models.ClaimCreate,
+def create_claim_endpoint(
+    claim: ClaimCreate,
+    current_user: models.User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    return create_claim(
+    return crud_create_claim(
         db=db,
-        submitter_id=claim.submitter_id,
+        submitter_id=current_user.id,
         group_id=claim.group_id,
         event_name=claim.event_name,
         event_level=claim.event_level,
