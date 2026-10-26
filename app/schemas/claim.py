@@ -6,8 +6,8 @@ from app.db.models import EventLevel, ParticipationCategory, ClaimStatus
 
 
 class UserBrief(BaseModel):
-    user_id: int
-    username: str
+    id: int
+    name: str
     email: str
 
     class Config:
